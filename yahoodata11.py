@@ -2,7 +2,8 @@ import sqlite3
 import requests 
 import re 
 from time import strptime
-
+import numpy as np
+import dayaverage2 
 #this program takes in data from Yahoo Finance Canada website in html form and accomodates it into an SQLite table. 
 
 base_url = "https://ca.finance.yahoo.com/q/hp"
@@ -78,7 +79,7 @@ conn = sqlite3.connect(identity + ".db")
 c = conn.cursor()
 
 c.execute('BEGIN TRANSACTION')
-c.execute('''CREATE TABLE Stocks (Date text, Open real , High real, Low real, Close real, Volume integer, Adj Close real, Dividend real, Split text)''')
+c.execute('''CREATE TABLE Stocks (Date text, Open real , High real, Low real, Close real, Volume integer, AdjClose real, Dividend real, Split text)''')
 #conn.commit()
 
 #here I will introduce 3 functions that take in 3 different types of text data and insert it into the table. 
@@ -197,10 +198,29 @@ while True:
 		break 
 
 #commit changes. 
-conn.commit()
+#conn.commit()
 #c.execute('COMMIT') <--- did not need this . 
 #close connection to SQLite table, finally. 
+#conn.close() --> PROBLEM WITH NOT CLOSING IT, BAD PRACTICE !! 
+
+
+print("Done.")
+order = input("Moving avg values i.e (10, 20) for 10-day and 20-day MA tables: ")
+
+orders = re.split('\, ', order )
+
+c.execute("BEGIN TRANSACTION")
+
+for i in orders: 
+	#i.replace(" ", "") <-- can't get rid of the spaces 
+	dayaverage2.dayaveragetables(conn, c, identity, i)
+
+conn.commit()
 conn.close()
+
+
+
+
 
 
 
