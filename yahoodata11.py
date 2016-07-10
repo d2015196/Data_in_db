@@ -98,9 +98,10 @@ def cleardata(b, conn, c):
 	lastlist = re.split('\</td>', last)
 	data4[len(data4) - 1] = lastlist[0]
 
-	#format the date so that it date-time functions can be applied on SQLite table 
+	#format the date so that it date-time functions can be applied on SQLite table, if needed. 
 
-	data4[0] = dateformat(data4[0]) #!
+	if ","  in data4[0]:
+		data4[0] = dateformat(data4[0]) #!
 	
 	#Insert row of data 
 	c.execute("INSERT INTO Stocks VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL)", data4)
@@ -114,7 +115,10 @@ def stocksplit(b, conn, c):
 	#extract the date in data4o[0], and the ratio in data4o[1], ultimately. 
 	data4o = re.split('\</td><td class="yfnc_tabledata1" align="center" colspan="6">', b)
 	date = data4o[0]
-	date = dateformat(data4o[0]) #!
+
+	if "," in data4o[0]:
+		date = dateformat(data4o[0]) #!
+
 	d = re.split('\ Stock Split', data4o[1])
 	ratio = d[0]
 	ratio = re.sub(r'\s+', '', ratio)
@@ -132,7 +136,10 @@ def dividend(b, conn, c):
 
 	data4p = re.split('\</td><td class="yfnc_tabledata1" align="center" colspan="6">', b)
 	date = data4p[0]
-	date = dateformat(data4p[0]) #!
+
+	if "," in data4p[0]:
+		date = dateformat(data4p[0]) #!
+
 	dividendlist = re.split('\ Dividend', data4p[1])
 	dividend = dividendlist[0]
 
